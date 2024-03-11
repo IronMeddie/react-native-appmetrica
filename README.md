@@ -33,7 +33,15 @@ AppMetrica.reportError({
 
   // ecom
 
-import { showProductCardEvent, showScreenEvent, showProductDetailsEvent,addCartItemEvent,removeCartItemEvent,beginCheckoutEvent,purchaseEvent } from 'react-native-appmetrica';
+import { 
+  showProductCardEvent,
+  showScreenEvent,
+  showProductDetailsEvent,
+  addCartItemEvent,
+  removeCartItemEvent,
+  beginCheckoutEvent,
+  purchaseEvent
+} from 'react-native-appmetrica/src/ecommerce';
 
 // showScreenEvent
 function ecomScreeen(){
