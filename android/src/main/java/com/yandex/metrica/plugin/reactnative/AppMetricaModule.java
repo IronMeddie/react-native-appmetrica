@@ -48,16 +48,6 @@ public class AppMetricaModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void activate(ReadableMap configMap) {
         AppMetrica.activate(reactContext, Utils.toAppMetricaConfig(configMap));
-        enableActivityAutoTracking();
-    }
-
-    private void enableActivityAutoTracking() {
-        Activity activity = getCurrentActivity();
-        if (activity != null) { // TODO: check
-            AppMetrica.enableActivityAutoTracking(activity.getApplication());
-        } else {
-            Log.w(TAG, "Activity is not attached");
-        }
     }
 
     @ReactMethod

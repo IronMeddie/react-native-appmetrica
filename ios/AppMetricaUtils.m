@@ -41,16 +41,13 @@
     if (configDict[@"preloadInfo"] != nil) {
         configuration.preloadInfo = [[self class] preloadInfoForDictionary:configDict[@"preloadInfo"]];
     }
-    if (configDict[@"sessionsAutoTracking"] != nil) {
-        configuration.sessionsAutoTracking = [configDict[@"sessionsAutoTracking"] boolValue];
-    }
     if (configDict[@"sessionTimeout"] != nil) {
         configuration.sessionTimeout = [configDict[@"sessionTimeout"] unsignedIntegerValue];
     }
     if (configDict[@"statisticsSending"] != nil) {
         configuration.dataSendingEnabled = [configDict[@"statisticsSending"] boolValue];
     }
-    
+    configuration.sessionsAutoTracking = false;
     return configuration;
 }
 

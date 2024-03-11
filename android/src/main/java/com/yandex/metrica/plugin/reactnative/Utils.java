@@ -71,7 +71,7 @@ abstract class Utils {
         if (configMap.hasKey("statisticsSending")) {
             builder.withDataSendingEnabled(configMap.getBoolean("statisticsSending"));
         }
-
+        builder.withSessionsAutoTrackingEnabled(false);
         return builder.build();
     }
 
