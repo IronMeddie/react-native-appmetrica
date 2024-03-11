@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules, Platform, AppState, Linking } from 'react-native';
 import ECommerceClass, { ECommerceEvent }  from './ecommerce.ts';
 
 const LINKING_ERROR =
@@ -68,9 +68,40 @@ type StartupParamsCallback = (params: StartupParams, reason?: StartupParamsReaso
 
 const ECommerce = ECommerceClass;
 
+function sessionTracking(){
+  AppState.addEventListener('change', state => {
+  if (AppState.currentState === 'active') {
+  AppMetrica.resumeSession();
+  }
+    if(state === 'active'){
+      AppMetrica.resumeSession();
+    };
+    if(state === 'background'){
+      AppMetrica.pauseSession();
+    };
+  });
+};
+
+function appOpenTracking(){
+  const getUrlAsync = async () => {
+    const initialUrl = await Linking.getInitialURL();
+    console.debug("AppMetrica initialUrl: " + initialUrl);
+    if(initialUrl != null){
+      AppMetrica.reportAppOpen(initialUrl);
+    }
+  };
+  getUrlAsync();
+};
+
 export default {
   activate(config: AppMetricaConfig) {
     AppMetrica.activate(config);
+    if(config.sessionsAutoTracking === true || config.sessionsAutoTracking == null){
+      sessionTracking();
+    };
+    if(config.appOpenTrackingEnbled || config.appOpenTrackingEnbled == null){
+      appOpenTracking();
+    };
   },
 
   // Android only
@@ -133,6 +164,4 @@ export default {
   reportECommerce(event: ECommerceEvent){
     AppMetrica.reportECommerce(event)
   },
-
-  ECommerce
 };
