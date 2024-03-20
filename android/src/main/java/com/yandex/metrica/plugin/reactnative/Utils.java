@@ -72,6 +72,7 @@ abstract class Utils {
             builder.withDataSendingEnabled(configMap.getBoolean("statisticsSending"));
         }
         builder.withSessionsAutoTrackingEnabled(false);
+
         return builder.build();
     }
 

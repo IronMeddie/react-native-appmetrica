@@ -23,7 +23,6 @@ import com.facebook.react.module.annotations.ReactModule;
 import io.appmetrica.analytics.AppMetrica;
 import io.appmetrica.analytics.StartupParamsCallback;
 import java.util.Arrays;
-import java.util.List;
 
 @ReactModule(name = AppMetricaModule.NAME)
 public class AppMetricaModule extends ReactContextBaseJavaModule {
@@ -71,11 +70,11 @@ public class AppMetricaModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void reportError(ReadableMap message) {
+    public void reportError(String identifier, String message) {
         try {
             Integer.valueOf("00xffWr0ng");
         } catch (Throwable error) {
-            AppMetrica.reportError(message.getString("identifier"), message.getString("message"), error);
+            AppMetrica.reportError(identifier, message, error);
         }
     }
 
@@ -86,11 +85,6 @@ public class AppMetricaModule extends ReactContextBaseJavaModule {
         } else {
             AppMetrica.reportEvent(eventName, attributes.toHashMap());
         }
-    }
-
-    @ReactMethod
-    public void reportReferralUrl(String referralUrl) {
-        AppMetrica.reportReferralUrl(referralUrl);
     }
 
     @ReactMethod
@@ -119,7 +113,7 @@ public class AppMetricaModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setStatisticsSending(boolean enabled) {
+    public void setDataSendingEnabled(boolean enabled) {
         AppMetrica.setDataSendingEnabled(enabled);
     }
 

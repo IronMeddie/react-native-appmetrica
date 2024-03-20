@@ -14,7 +14,7 @@
 
 + (AMAAppMetricaConfiguration *)configurationForDictionary:(NSDictionary *)configDict;
 + (CLLocation *)locationForDictionary:(NSDictionary *)locationDict;
-+ (NSString *)stringFromRequestDeviceIDError:(NSError *)error;
++ (NSString *)stringFromRequestStartupParamsError:(NSError *)error;
 + (AMAECommerceScreen *)ecommerceScreenForDict:(NSDictionary *)ecommerceScreenDict;
 + (AMAECommerceAmount *)ecommerceAmountForDict:(NSDictionary *)ecommerceAmountDict;
 + (AMAECommercePrice *)ecommercePriceForDict:(NSDictionary *)ecommercePriceDict;
@@ -23,6 +23,5 @@
 + (AMAECommerceCartItem *)ecommerceCartItemForDict:(NSDictionary *)ecommerceCartItemDict;
 + (AMAECommerceOrder *)ecommerceOrderForDict:(NSDictionary *)ecommerceOrderDict;
 + (AMAECommerce *)ecommerceForDict:(NSDictionary *)ecommerceDict;
-+ (AMAError *)errorForDict:(NSDictionary *)errorDict;
 
 @end

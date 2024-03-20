@@ -15,7 +15,7 @@
     NSString *apiKey = configDict[@"apiKey"];
     AMAAppMetricaConfiguration *configuration = [[AMAAppMetricaConfiguration alloc] initWithAPIKey:apiKey];
     AMAAppMetricaCrashesConfiguration *crashesConfiguration = [[AMAAppMetricaCrashesConfiguration alloc] init];
-    
+
     if (configDict[@"appVersion"] != nil) {
         configuration.appVersion = configDict[@"appVersion"];
     }
@@ -41,6 +41,9 @@
     if (configDict[@"preloadInfo"] != nil) {
         configuration.preloadInfo = [[self class] preloadInfoForDictionary:configDict[@"preloadInfo"]];
     }
+    if (configDict[@"sessionsAutoTracking"] != nil) {
+        configuration.sessionsAutoTracking = [configDict[@"sessionsAutoTracking"] boolValue];
+    }
     if (configDict[@"sessionTimeout"] != nil) {
         configuration.sessionTimeout = [configDict[@"sessionTimeout"] unsignedIntegerValue];
     }
@@ -48,6 +51,7 @@
         configuration.dataSendingEnabled = [configDict[@"statisticsSending"] boolValue];
     }
     configuration.sessionsAutoTracking = false;
+
     return configuration;
 }
 
@@ -56,7 +60,7 @@
     if (locationDict == nil) {
         return nil;
     }
-    
+
     NSNumber *latitude = locationDict[@"latitude"];
     NSNumber *longitude = locationDict[@"longitude"];
     NSNumber *altitude = locationDict[@"altitude"];
@@ -65,7 +69,7 @@
     NSNumber *course = locationDict[@"course"];
     NSNumber *speed = locationDict[@"speed"];
     NSNumber *timestamp = locationDict[@"timestamp"];
-    
+
     NSDate *locationDate = timestamp != nil ? [NSDate dateWithTimeIntervalSince1970:timestamp.doubleValue] : [NSDate date];
     CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake(latitude.doubleValue, longitude.doubleValue);
     CLLocation *location = [[CLLocation alloc] initWithCoordinate:coordinate
@@ -75,7 +79,7 @@
                                                            course:course.doubleValue
                                                             speed:speed.doubleValue
                                                         timestamp:locationDate];
-    
+
     return location;
 }
 
@@ -84,21 +88,21 @@
     if (preloadInfoDict == nil) {
         return nil;
     }
-    
+
     NSString *trackingId = preloadInfoDict[@"trackingId"];
     AMAAppMetricaPreloadInfo *preloadInfo = [[AMAAppMetricaPreloadInfo alloc] initWithTrackingIdentifier:trackingId];
-    
+
     NSDictionary *additionalInfo = preloadInfoDict[@"additionalInfo"];
     if (additionalInfo != nil) {
         for (NSString *key in additionalInfo) {
             [preloadInfo setAdditionalInfo:additionalInfo[key] forKey:key];
         }
     }
-    
+
     return preloadInfo;
 }
 
-+ (NSString *)stringFromRequestDeviceIDError:(NSError *)error
++ (NSString *)stringFromRequestStartupParamsError:(NSError *)error
 {
     if (error == nil) {
         return nil;
@@ -135,7 +139,7 @@
     NSArray *componentsArray = ecommercePriceDict[@"internalComponents"];
     
     NSMutableArray *components = [[NSMutableArray alloc] init];
-    
+
     for (NSDictionary *item in componentsArray) {
         [components addObject:[self ecommerceAmountForDict:item]];
     }
@@ -207,7 +211,7 @@
     NSDictionary *payload = ecommerceOrderDict[@"payload"];
     NSArray *cartItemsArrayDict = ecommerceOrderDict[@"products"];
     NSMutableArray *cartItems = [[NSMutableArray alloc] init];
-    
+
     for (NSDictionary *item in cartItemsArrayDict) {
         [cartItems addObject:[self ecommerceCartItemForDict:item]];
     }
@@ -227,7 +231,6 @@
     AMAECommerceAmount *amount = [[AMAECommerceAmount alloc] initWithUnit:unit value:value];
     return amount;
 }
-
 
 + (AMAECommerce *)ecommerceForDict:(NSDictionary *)ecommerceDict
 {
@@ -275,17 +278,6 @@
         return event;
     }
     return nil;
-}
-
-+ (AMAError *)errorForDict:(NSDictionary *)errorDict
-{
-    if (errorDict == nil) {
-        return nil;
-    }
-    NSString *identifier = errorDict[@"identifier"];
-    NSString *message = errorDict[@"message"];
-    AMAError *error = [AMAError errorWithIdentifier:identifier message:message parameters:NULL];
-    return error;
 }
 
 @end

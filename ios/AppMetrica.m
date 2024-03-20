@@ -42,8 +42,9 @@ RCT_EXPORT_METHOD(reportAppOpen:(NSString *)deeplink)
     [AMAAppMetrica trackOpeningURL:[NSURL URLWithString:deeplink]];
 }
 
-RCT_EXPORT_METHOD(reportError:(NSDictionary *)error) {
-    [[AMAAppMetricaCrashes crashes] reportError:[AppMetricaUtils errorForDict:error] onFailure:nil];
+RCT_EXPORT_METHOD(reportError:(NSString *)identifier:(NSString *)message) {
+    AMAError *error = [AMAError errorWithIdentifier:identifier message:message parameters:NULL];
+    [[AMAAppMetricaCrashes crashes] reportError:error onFailure:nil];
 }
 
 RCT_EXPORT_METHOD(reportEvent:(NSString *)eventName:(NSDictionary *)attributes)
@@ -62,13 +63,9 @@ RCT_EXPORT_METHOD(reportEvent:(NSString *)eventName:(NSDictionary *)attributes)
 RCT_EXPORT_METHOD(requestStartupParams:(RCTResponseSenderBlock)listener)
 {
     AMAIdentifiersCompletionBlock block = ^(NSDictionary<AMAStartupKey,id> * _Nullable identifiers, NSError * _Nullable error) {
-        listener(@[[self wrap:identifiers], [self wrap:[AppMetricaUtils stringFromRequestDeviceIDError:error]]]);
+        listener(@[[self wrap:identifiers], [self wrap:[AppMetricaUtils stringFromRequestStartupParamsError:error]]]);
     };
-
     [AMAAppMetrica requestStartupIdentifiersWithCompletionQueue:nil completionBlock:block];
-    
-    //    NSArray<AMAStartupKey> *keys = @[kAMADeviceIDHashKey, kAMADeviceIDKey, kAMAUUIDKey];
-    //    [AMAAppMetrica requestStartupIdentifiers:keys completionQueue:nil completionBlock:block];
 }
 
 RCT_EXPORT_METHOD(resumeSession)
@@ -91,7 +88,7 @@ RCT_EXPORT_METHOD(setLocationTracking:(BOOL)enabled)
     AMAAppMetrica.locationTrackingEnabled = enabled;
 }
 
-RCT_EXPORT_METHOD(setStatisticsSending:(BOOL)enabled)
+RCT_EXPORT_METHOD(setDataSendingEnabled:(BOOL)enabled)
 {
     [AMAAppMetrica setDataSendingEnabled:enabled];
 }

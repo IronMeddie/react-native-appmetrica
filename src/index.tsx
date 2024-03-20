@@ -1,5 +1,5 @@
 import { NativeModules, Platform, AppState, Linking } from 'react-native';
-import ECommerceClass, { ECommerceEvent }  from './ecommerce.ts';
+import type { ECommerceEvent }  from './ecommerce.ts';
 
 const LINKING_ERROR =
   `The package 'react-native-appmetrica' doesn't seem to be linked. Make sure: \n\n` +
@@ -51,12 +51,7 @@ type Location = {
   timestamp?: number;
 };
 
-type Error = {
-  identifier:string;
-  message:string;
-};
-
-type StartupParamsReason = 'UNKNOWN' | 'NETWORK' | 'INVALID_RESPONSE';
+type AppMetricaDeviceIdReason = 'UNKNOWN' | 'NETWORK' | 'INVALID_RESPONSE';
 
 export type StartupParams = {
   appmetrica_deviceIDHash: string;
@@ -65,8 +60,6 @@ export type StartupParams = {
 };
 
 type StartupParamsCallback = (params: StartupParams, reason?: StartupParamsReason) => void;
-
-const ECommerce = ECommerceClass;
 
 function sessionTracking(){
   AppState.addEventListener('change', state => {
@@ -92,6 +85,7 @@ function appOpenTracking(){
   };
   getUrlAsync();
 };
+
 
 export default {
   activate(config: AppMetricaConfig) {
@@ -121,16 +115,12 @@ export default {
     AppMetrica.reportAppOpen(deeplink);
   },
 
-  reportError(error: Error, _reason: Object) {
-    AppMetrica.reportError(error);
+  reportError(identifier: string, message: string ,_reason: Object) {
+    AppMetrica.reportError(identifier, message);
   },
 
   reportEvent(eventName: string, attributes?: Object) {
     AppMetrica.reportEvent(eventName, attributes);
-  },
-
-  reportReferralUrl(referralUrl: string) {
-    AppMetrica.reportReferralUrl(referralUrl);
   },
 
   requestStartupParams(listener: StartupParamsCallback) {
@@ -153,8 +143,8 @@ export default {
     AppMetrica.setLocationTracking(enabled);
   },
 
-  setStatisticsSending(enabled: boolean) {
-    AppMetrica.setStatisticsSending(enabled);
+  setDataSendingEnabled(enabled: boolean) {
+    AppMetrica.setDataSendingEnabled(enabled);
   },
 
   setUserProfileID(userProfileID?: string) {

@@ -14,10 +14,7 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
-
 import io.appmetrica.analytics.StartupParamsCallback;
-
-
 
 public class ReactNativeStartupParamsListener implements StartupParamsCallback {
 
