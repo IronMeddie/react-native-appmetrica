@@ -6,6 +6,7 @@ React Native bridge to the [AppMetrica](https://appmetrica.yandex.com/) on both 
 ```sh
 npm install react-native-appmetrica
 ```
+Replace <your project>/node_modules/react-native-appmetrica with files from this repo
 
 ## Usage
 
