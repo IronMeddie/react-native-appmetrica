@@ -8,6 +8,10 @@ npm install react-native-appmetrica
 ```
 Replace <your project>/node_modules/react-native-appmetrica with files from this repo
 
+```sh
+npx pod-install
+```
+
 ## Usage
 
 ```js
@@ -387,6 +391,7 @@ function beginCheckoutPurchaseEvent(){
 ```
 
 folly/FBString.h not found
+
 change your ios/Podfile: 
 ```
   ...
@@ -400,6 +405,10 @@ change your ios/Podfile:
       end
     end
   end
+```
+and use
+```sh
+npx pod-install
 ```
 
 ## License

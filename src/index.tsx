@@ -19,7 +19,7 @@ const AppMetrica = NativeModules.AppMetrica
       }
     );
 
-type AppMetricaConfig = {
+  export type AppMetricaConfig = {
   apiKey: string;
   appVersion?: string;
   crashReporting?: boolean;
@@ -37,12 +37,12 @@ type AppMetricaConfig = {
   appOpenTrackingEnbled?: boolean;
 };
 
-type PreloadInfo = {
+export type PreloadInfo = {
   trackingId: string;
   additionalInfo?: Object;
 };
 
-type Location = {
+export type Location = {
   latitude: number;
   longitude: number;
   altitude?: number;
@@ -60,7 +60,7 @@ export type StartupParams = {
   uuid?: string;
 };
 
-type StartupParamsCallback = (params: StartupParams, reason?: StartupParamsReason) => void;
+export type StartupParamsCallback = (params: StartupParams, reason?: StartupParamsReason) => void;
 
 const DEVICE_ID_HASH_KEY = 'appmetrica_device_id_hash';
 const DEVICE_ID_KEY = 'appmetrica_device_id';
