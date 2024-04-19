@@ -386,6 +386,22 @@ function beginCheckoutPurchaseEvent(){
 
 ```
 
+folly/FBString.h not found
+change your ios/Podfile: 
+```
+  ...
+  post_install do |installer|
+  ...
+    installer.pods_project.targets.each do |target|
+      if target.name == 'KSCrash'
+        target.build_configurations.each do |config|
+          config.build_settings['USE_HEADERMAP'] = 'NO'
+        end
+      end
+    end
+  end
+```
+
 ## License
 
 MIT
