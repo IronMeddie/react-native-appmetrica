@@ -107,6 +107,16 @@ RCT_EXPORT_METHOD(setUserProfileID:(NSString *)userProfileID)
     [AMAAppMetrica setUserProfileID:userProfileID];
 }
 
+RCT_EXPORT_METHOD(reportRevenue:(NSDictionary *)revenueDict)
+{
+    [AMAAppMetrica reportRevenue:[AppMetricaUtils revenueForDict:revenueDict] onFailure:nil];
+}
+
+RCT_EXPORT_METHOD(reportAdRevenue:(NSDictionary *)revenueDict)
+{
+    [AMAAppMetrica reportAdRevenue:[AppMetricaUtils adRevenueForDict:revenueDict] onFailure:nil];
+}
+
 - (NSObject *)wrap:(NSObject *)value
 {
     if (value == nil) {

@@ -27,6 +27,7 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
+    namespace = "com.yandex.metrica.plugin.reactnative"
     compileSdkVersion safeExtGet('AppMetrica_compileSdkVersion', 34)
     defaultConfig {
         minSdkVersion safeExtGet('AppMetrica_minSdkVersion', 16)

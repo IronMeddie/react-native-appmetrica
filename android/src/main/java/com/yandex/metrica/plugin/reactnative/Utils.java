@@ -26,11 +26,17 @@ import io.appmetrica.analytics.ecommerce.ECommerceProduct;
 import io.appmetrica.analytics.ecommerce.ECommerceReferrer;
 import io.appmetrica.analytics.ecommerce.ECommerceScreen;
 import io.appmetrica.analytics.StartupParamsCallback;
+import io.appmetrica.analytics.AdRevenue;
+import io.appmetrica.analytics.Revenue;
+import io.appmetrica.analytics.AdType;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Currency;
+import java.math.BigDecimal;
 
 abstract class Utils {
 
@@ -70,6 +76,9 @@ abstract class Utils {
         }
         if (configMap.hasKey("statisticsSending")) {
             builder.withDataSendingEnabled(configMap.getBoolean("statisticsSending"));
+        }
+        if (configMap.hasKey("sessionsAutoTracking")) {
+            builder.withSessionsAutoTrackingEnabled(configMap.getBoolean("sessionsAutoTracking"));
         }
 
         return builder.build();
@@ -129,7 +138,8 @@ abstract class Utils {
         return builder.build();
     }
 
-    static ECommerceScreen toECommerceScreen(ReadableMap ecommerceEventMap) {
+    @NonNull
+    static ECommerceScreen toECommerceScreen(@NonNull ReadableMap ecommerceEventMap) {
         ECommerceScreen screen = new ECommerceScreen();
         if (ecommerceEventMap.hasKey("name")) {
             screen.setName(ecommerceEventMap.getString("name"));
@@ -138,91 +148,115 @@ abstract class Utils {
             screen.setSearchQuery(ecommerceEventMap.getString("searchQuery"));
         }
         if (ecommerceEventMap.hasKey("payload")) {
-            Map<String, Object> map = ecommerceEventMap.getMap("payload").toHashMap();
-            Map<String, String> newMap = new HashMap<String, String>();
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                if (entry.getValue() instanceof String) {
-                    newMap.put(entry.getKey(), (String) entry.getValue());
+            ReadableMap map = ecommerceEventMap.getMap("payload");
+            if (map != null) {
+                Map<String, Object> oldMap = map.toHashMap();
+                Map<String, String> newMap = new HashMap<String, String>();
+                for (Map.Entry<String, Object> entry : oldMap.entrySet()) {
+                    if (entry.getValue() instanceof String) {
+                        newMap.put(entry.getKey(), (String) entry.getValue());
+                    }
                 }
+                screen.setPayload(newMap);
             }
-            screen.setPayload(newMap);
         }
         if (ecommerceEventMap.hasKey("categoriesPath")) {
-            List<Object> list = ecommerceEventMap.getArray("categoriesPath").toArrayList();
-            List<String> newlist = new ArrayList<String>(list.size());
-            for (Object object : list) {
-                newlist.add(Objects.toString(object, null));
+            ReadableArray list = ecommerceEventMap.getArray("categoriesPath");
+            if (list != null) {
+                List<String> newlist = new ArrayList<String>(list.size());
+                for (Object object : list.toArrayList()) {
+                    newlist.add(object.toString());
+                }
+                screen.setCategoriesPath(newlist);
             }
-            screen.setCategoriesPath(newlist);
         }
         return screen;
     }
 
 
-    static ECommerceAmount toEcommerceAmount(ReadableMap amountMap) {
-        if (amountMap == null) {
-            return null;
-        }
-        return new ECommerceAmount(amountMap.getDouble("amount"), amountMap.getString("unit"));
+    @NonNull
+    static ECommerceAmount toEcommerceAmount(@NonNull ReadableMap amountMap) {
+        return new ECommerceAmount(amountMap.getDouble("amount"), Objects.requireNonNull(amountMap.getString("unit")));
     }
 
-    static ECommercePrice toECommercePrice(ReadableMap priceMap) {
-        ECommercePrice price = new ECommercePrice(toEcommerceAmount(priceMap.getMap("amount")));
+    @NonNull
+    static ECommercePrice toECommercePrice(@NonNull ReadableMap priceMap) {
+        ReadableMap amountMap = priceMap.getMap("amount");
+        ECommerceAmount amount = toEcommerceAmount(Objects.requireNonNull(amountMap));
+        ECommercePrice price = new ECommercePrice(amount);
         if (priceMap.hasKey("internalComponents")) {
             ReadableArray list = priceMap.getArray("internalComponents");
-            List<ECommerceAmount> newlist = new ArrayList<ECommerceAmount>(list.size());
-            for (int i = 0; i < list.size(); i++) {
-                ECommerceAmount component = toEcommerceAmount(list.getMap(i));
-                newlist.add(component);
+            if (list != null) {
+                List<ECommerceAmount> newlist = new ArrayList<ECommerceAmount>(list.size());
+                for (int i = 0; i < list.size(); i++) {
+                    ECommerceAmount component = toEcommerceAmount(list.getMap(i));
+                    newlist.add(component);
+                }
+                price.setInternalComponents(newlist);
             }
-            price.setInternalComponents(newlist);
         }
         return price;
     }
 
-    static ECommerceProduct toECommerceProduct(ReadableMap productMap) {
-        ECommerceProduct product = new ECommerceProduct(productMap.getString("sku"));
+    @NonNull
+    static ECommerceProduct toECommerceProduct(@NonNull ReadableMap productMap) {
+        ECommerceProduct product = new ECommerceProduct(Objects.requireNonNull(productMap.getString("sku")));
 
         if (productMap.hasKey("name")) {
             product.setName(productMap.getString("name"));
         }
         if (productMap.hasKey("actualPrice")) {
-            product.setActualPrice(toECommercePrice(productMap.getMap("actualPrice")));
+            ReadableMap priceMap = productMap.getMap("actualPrice");
+            if (priceMap != null) {
+                product.setActualPrice(toECommercePrice(priceMap));
+            }
         }
         if (productMap.hasKey("originalPrice")) {
-            product.setOriginalPrice(toECommercePrice(productMap.getMap("originalPrice")));
+            ReadableMap priceMap = productMap.getMap("originalPrice");
+            if (priceMap != null) {
+                product.setOriginalPrice(toECommercePrice(priceMap));
+            }
         }
         if (productMap.hasKey("promocodes")) {
             ReadableArray array = productMap.getArray("promocodes");
-            List<String> newArray = new ArrayList<String>(array.size());
-            for (int i = 0; i < array.size(); i++) {
-                newArray.add(array.getString(i));
+            if (array != null) {
+                List<String> newArray = new ArrayList<String>(array.size());
+                for (int i = 0; i < array.size(); i++) {
+                    newArray.add(array.getString(i));
+                }
+                product.setPromocodes(newArray);
             }
-            product.setPromocodes(newArray);
         }
         if (productMap.hasKey("categoriesPath")) {
             ReadableArray array = productMap.getArray("categoriesPath");
-            List<String> newArray = new ArrayList<String>(array.size());
-            for (int i = 0; i < array.size(); i++) {
-                newArray.add(array.getString(i));
+            if (array != null) {
+                List<String> newArray = new ArrayList<String>(array.size());
+                for (int i = 0; i < array.size(); i++) {
+                    newArray.add(array.getString(i));
+                }
+                product.setCategoriesPath(newArray);
             }
-            product.setCategoriesPath(newArray);
         }
         if (productMap.hasKey("payload")) {
-            Map<String, Object> map = productMap.getMap("payload").toHashMap();
-            Map<String, String> newMap = new HashMap<String, String>();
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                if (entry.getValue() instanceof String) {
-                    newMap.put(entry.getKey(), (String) entry.getValue());
+            ReadableMap map = productMap.getMap("payload");
+            if (map != null) {
+                Map<String, String> newMap = new HashMap<String, String>();
+                for (Map.Entry<String, Object> entry : map.toHashMap().entrySet()) {
+                    if (entry.getValue() instanceof String) {
+                        newMap.put(entry.getKey(), (String) entry.getValue());
+                    }
                 }
+                product.setPayload(newMap);
             }
-            product.setPayload(newMap);
         }
-
         return product;
     }
 
-    static ECommerceReferrer toECommerceReferrer(ReadableMap referrerMap) {
+    @Nullable
+    static ECommerceReferrer toECommerceReferrer(@Nullable ReadableMap referrerMap) {
+        if (referrerMap == null) {
+            return null;
+        }
         ECommerceReferrer referrer = new ECommerceReferrer();
         if (referrerMap.hasKey("type")) {
             referrer.setType(referrerMap.getString("type"));
@@ -231,86 +265,201 @@ abstract class Utils {
             referrer.setIdentifier(referrerMap.getString("identifier"));
         }
         if (referrerMap.hasKey("screen")) {
-            referrer.setScreen(toECommerceScreen(referrerMap.getMap("screen")));
+            ReadableMap screenMap = referrerMap.getMap("screen");
+            if (screenMap != null) {
+                referrer.setScreen(toECommerceScreen(screenMap));
+            }
         }
         return referrer;
     }
 
-    static ECommerceCartItem toECommerceCartItem(ReadableMap cartItemMap) {
-        ECommerceProduct product = toECommerceProduct(cartItemMap.getMap("product"));
-        ECommercePrice price = toECommercePrice(cartItemMap.getMap("price"));
-        Double quantity = cartItemMap.getDouble("quantity");
+    @NonNull
+    static ECommerceCartItem toECommerceCartItem(@NonNull ReadableMap cartItemMap) {
+        ECommerceProduct product = toECommerceProduct(Objects.requireNonNull(cartItemMap.getMap("product")));
+        ECommercePrice price = toECommercePrice(Objects.requireNonNull(cartItemMap.getMap("price")));
+        double quantity = cartItemMap.getDouble("quantity");
         ECommerceCartItem item = new ECommerceCartItem(product, price, quantity);
         if (cartItemMap.hasKey("referrer")) {
-            item.setReferrer(toECommerceReferrer(cartItemMap.getMap("referrer")));
+            ReadableMap referrerMap = cartItemMap.getMap("referrer");
+            if (referrerMap != null) {
+                item.setReferrer(toECommerceReferrer(referrerMap));
+            }
         }
         return item;
     }
 
-    static ECommerceOrder toECommerceOrder(ReadableMap orderMap) {
+    @NonNull
+    static ECommerceOrder toECommerceOrder(@NonNull ReadableMap orderMap) {
         String orderId = orderMap.getString("orderId");
         ReadableArray list = orderMap.getArray("products");
-        List<ECommerceCartItem> newlist = new ArrayList<ECommerceCartItem>(list.size());
+        List<ECommerceCartItem> newlist = new ArrayList<ECommerceCartItem>(Objects.requireNonNull(list).size());
         for (int i = 0; i < list.size(); i++) {
             ECommerceCartItem component = toECommerceCartItem(list.getMap(i));
             newlist.add(component);
         }
-        ECommerceOrder order = new ECommerceOrder(orderId, newlist);
+        ECommerceOrder order = new ECommerceOrder(Objects.requireNonNull(orderId), newlist);
         if (orderMap.hasKey("payload")) {
-            Map<String, Object> map = orderMap.getMap("payload").toHashMap();
-            Map<String, String> newMap = new HashMap<String, String>();
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                if (entry.getValue() instanceof String) {
-                    newMap.put(entry.getKey(), (String) entry.getValue());
+            ReadableMap map = orderMap.getMap("payload");
+            if (map != null) {
+                Map<String, String> newMap = new HashMap<String, String>();
+                for (Map.Entry<String, Object> entry : map.toHashMap().entrySet()) {
+                    if (entry.getValue() instanceof String) {
+                        newMap.put(entry.getKey(), (String) entry.getValue());
+                    }
                 }
+                order.setPayload(newMap);
             }
-            order.setPayload(newMap);
         }
         return order;
     }
 
-    static ECommerceEvent toECommerceEvent(ReadableMap EcommerceEventMap) {
+    @Nullable
+    static ECommerceEvent toECommerceEvent(@Nullable ReadableMap EcommerceEventMap) {
+        if (EcommerceEventMap == null) {
+            return null;
+        }
         String type = EcommerceEventMap.getString("ecommerceEvent");
-        ECommerceEvent event;
         if (type == null) return null;
         if (type.equals("showSceenEvent")) {
-            return ECommerceEvent.showScreenEvent(toECommerceScreen(EcommerceEventMap.getMap("ecommerceScreen")));
+            return ECommerceEvent.showScreenEvent(toECommerceScreen(Objects.requireNonNull(EcommerceEventMap.getMap("ecommerceScreen"))));
         }
         if (type.equals("showProductCardEvent")) {
-            return ECommerceEvent.showProductCardEvent(toECommerceProduct(EcommerceEventMap.getMap("product")), toECommerceScreen(EcommerceEventMap.getMap("ecommerceScreen")));
+            return ECommerceEvent.showProductCardEvent(toECommerceProduct(Objects.requireNonNull(EcommerceEventMap.getMap("product"))), toECommerceScreen(Objects.requireNonNull(EcommerceEventMap.getMap("ecommerceScreen"))));
         }
         if (type.equals("showProductDetailsEvent")) {
-            return ECommerceEvent.showProductDetailsEvent(toECommerceProduct(EcommerceEventMap.getMap("product")), toECommerceReferrer(EcommerceEventMap.getMap("referrer")));
+            return ECommerceEvent.showProductDetailsEvent(toECommerceProduct(Objects.requireNonNull(EcommerceEventMap.getMap("product"))), toECommerceReferrer(EcommerceEventMap.getMap("referrer")));
         }
         if (type.equals("addCartItemEvent")) {
-            return ECommerceEvent.addCartItemEvent(toECommerceCartItem(EcommerceEventMap.getMap("cartItem")));
+            return ECommerceEvent.addCartItemEvent(toECommerceCartItem(Objects.requireNonNull(EcommerceEventMap.getMap("cartItem"))));
         }
         if (type.equals("removeCartItemEvent")) {
-            return ECommerceEvent.removeCartItemEvent(toECommerceCartItem(EcommerceEventMap.getMap("cartItem")));
+            return ECommerceEvent.removeCartItemEvent(toECommerceCartItem(Objects.requireNonNull(EcommerceEventMap.getMap("cartItem"))));
         }
         if (type.equals("beginCheckoutEvent")) {
-            return ECommerceEvent.beginCheckoutEvent(toECommerceOrder(EcommerceEventMap.getMap("order")));
+            return ECommerceEvent.beginCheckoutEvent(toECommerceOrder(Objects.requireNonNull(EcommerceEventMap.getMap("order"))));
         }
         if (type.equals("purchaseEvent")) {
-            return ECommerceEvent.purchaseEvent(toECommerceOrder(EcommerceEventMap.getMap("order")));
+            ECommerceOrder order = toECommerceOrder(Objects.requireNonNull(EcommerceEventMap.getMap("order")));
+            return ECommerceEvent.purchaseEvent(order);
         }
         return null;
     }
 
-    static List<String> toStartupKeyList(ReadableArray keys) {
+    @NonNull
+    static List<String> toStartupKeyList(@Nullable ReadableArray keys) {
         ArrayList<String> startupKeys = new ArrayList<>();
-        for (int i = 0; i < keys.size(); i++) {
-            String item = keys.getString(i);
-            if (item == "appmetrica_device_id_hash") {
-                startupKeys.add(StartupParamsCallback.APPMETRICA_DEVICE_ID_HASH);
-            }
-            if (item == "appmetrica_device_id") {
-                startupKeys.add(StartupParamsCallback.APPMETRICA_DEVICE_ID);
-            }
-            if (item == "appmetrica_uuid") {
-                startupKeys.add(StartupParamsCallback.APPMETRICA_UUID);
+        if (keys != null) {
+            for (int i = 0; i < keys.size(); i++) {
+                String item = keys.getString(i);
+                if (item.equals("appmetrica_device_id_hash")) {
+                    startupKeys.add(StartupParamsCallback.APPMETRICA_DEVICE_ID_HASH);
+                }
+                if (item.equals("appmetrica_device_id")) {
+                    startupKeys.add(StartupParamsCallback.APPMETRICA_DEVICE_ID);
+                }
+                if (item.equals("appmetrica_uuid")) {
+                    startupKeys.add(StartupParamsCallback.APPMETRICA_UUID);
+                }
             }
         }
         return startupKeys;
+    }
+
+    @NonNull
+    static Revenue toRevenue(ReadableMap revenueMap) {
+        long price = (long) revenueMap.getDouble("price") * 1000000;
+        String currency = revenueMap.getString("currency");
+        Revenue.Builder revenue = Revenue.newBuilder(price, Currency.getInstance(currency));
+        if (revenueMap.hasKey("productID")) {
+            revenue.withProductID(revenueMap.getString("productID"));
+        }
+        if (revenueMap.hasKey("payload")) {
+            ReadableMap payloadMap = revenueMap.getMap("payload");
+            if (payloadMap != null) {
+                revenue.withPayload(payloadMap.toString());
+            }
+        }
+        if (revenueMap.hasKey("quantity")) {
+            revenue.withQuantity(revenueMap.getInt("quantity"));
+        }
+        revenue.withReceipt(toReceipt(revenueMap));
+        return revenue.build();
+    }
+
+    @NonNull
+    static Revenue.Receipt toReceipt(ReadableMap receipt) {
+        Revenue.Receipt.Builder revenueReceipt = Revenue.Receipt.newBuilder();
+        if (receipt.hasKey("receiptData")) {
+            revenueReceipt.withData(receipt.getString("receiptData"));
+        }
+        if (receipt.hasKey("signature")) {
+            revenueReceipt.withSignature(receipt.getString("signature"));
+        }
+        return revenueReceipt.build();
+    }
+
+    @NonNull
+    static AdRevenue toAdRevenue(ReadableMap revenueMap) {
+        double price = revenueMap.getDouble("price");   
+        String currency = revenueMap.getString("currency");
+        AdRevenue.Builder adRevenue = AdRevenue.newBuilder(new BigDecimal(price), Currency.getInstance(currency));
+        if (revenueMap.hasKey("payload")) {
+            ReadableMap payloadMap = revenueMap.getMap("payload");
+            if (payloadMap != null) {
+                Map<String, Object> map = payloadMap.toHashMap();
+                Map<String, String> adRevenuePayload = new HashMap<>();
+                for (Map.Entry<String, Object> entry : map.entrySet()) {
+                    if (entry.getValue() instanceof String) {
+                        adRevenuePayload.put(entry.getKey(), (String) entry.getValue());
+                    }
+                }
+                adRevenue.withPayload(adRevenuePayload);
+            }
+        }
+        if (revenueMap.hasKey("adType")) {
+            String type = revenueMap.getString("adType");
+            if (type != null) {
+                adRevenue.withAdType(toAdType(type));
+            }
+        }
+        if (revenueMap.hasKey("adNetwork")) {
+            adRevenue.withAdNetwork(revenueMap.getString("adNetwork"));
+        }
+        if (revenueMap.hasKey("adPlacementID")) {
+            adRevenue.withAdPlacementId(revenueMap.getString("adPlacementID"));
+        }
+        if (revenueMap.hasKey("adPlacementName")) {
+            adRevenue.withAdPlacementName(revenueMap.getString("adPlacementName"));
+        }
+        if (revenueMap.hasKey("adUnitID")) {
+            adRevenue.withAdUnitId(revenueMap.getString("adUnitID"));
+        }
+        if (revenueMap.hasKey("adUnitName")) {
+            adRevenue.withAdUnitName(revenueMap.getString("adUnitName"));
+        }
+        if (revenueMap.hasKey("precision")) {
+            adRevenue.withPrecision(revenueMap.getString("precision"));
+        }
+        return adRevenue.build();
+    }
+
+    @NonNull
+    static AdType toAdType(String type) {
+        switch (type) {
+            case "native": return AdType.NATIVE;
+            case "banner": return AdType.BANNER;
+            case "mrec": return AdType.MREC;
+            case "interstitial": return AdType.INTERSTITIAL;
+            case "rewarded": return AdType.REWARDED;
+            default: return AdType.OTHER;
+        }
+    }
+
+    @NonNull
+    static Boolean isSessionTrackingEnabled(@NonNull ReadableMap configMap) {
+        if (configMap.hasKey("sessionsAutoTracking")) {
+            return configMap.getBoolean("sessionsAutoTracking");
+        }
+        return true;
     }
 }

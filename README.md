@@ -352,6 +352,38 @@ function beginCheckoutPurchaseEvent(){
     console.debug(params.uuid);
   };
   AppMetrica.requestStartupParams(paramsCallback, paramsList);
+
+
+  //revenue
+  const revenue = {
+    price: 500,
+    currency: 'USD',
+    productID: '12345', // optional
+    quantity: 1, // optional
+    payload: { param: '1234' }, // optional. additional info
+    transactionID: 'transactionID' //optional. ios revenue transaction id,
+    receiptData: 'receiptData;' // optional. android purchase orijinalJson || ios receiptData,
+    signature: 'signature;', // optional. android purchase Signature
+  };
+  AppMetrica.reportRevenue(revenue);
+
+  //adRevenue
+  import { AdType }  from 'react-native-appmetrica/src/revenue.ts';
+  ...
+  const adRevenue = {
+    price: 100,
+    currency: 'RUB',
+    payload: { param: '1234' }, // optional. additional info
+    adNetwork: 'adNetwork', // optional
+    adPlacementId: 'adPlacementId', // optional
+    adPlacementName: 'adPlacementName', // optional
+    adType: AdType.BANNER, // optional
+    adUnitId: '12345', // optional
+    adUnitName: 'adUnitName', // optional
+    precision: 'precision', // optional
+  };
+  AppMetrica.reportAdRevenue(adRevenue);
+
 ```
 
 ## License

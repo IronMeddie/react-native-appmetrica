@@ -46,12 +46,15 @@ public class AppMetricaModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void activate(ReadableMap configMap) {
         AppMetrica.activate(reactContext, Utils.toAppMetricaConfig(configMap));
-        enableActivityAutoTracking();
+        if (Utils.isSessionTrackingEnabled(configMap)) {
+            enableActivityAutoTracking();
+        }
     }
 
     private void enableActivityAutoTracking() {
         Activity activity = getCurrentActivity();
         if (activity != null) { // TODO: check
+            AppMetrica.resumeSession(activity);
             AppMetrica.enableActivityAutoTracking(activity.getApplication());
         } else {
             Log.w(TAG, "Activity is not attached");
@@ -134,5 +137,15 @@ public class AppMetricaModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void reportECommerce(ReadableMap ecommerceEvent) {
         AppMetrica.reportECommerce(Utils.toECommerceEvent(ecommerceEvent));
+    }
+
+    @ReactMethod
+    public void reportRevenue(ReadableMap revenue) {
+        AppMetrica.reportRevenue(Utils.toRevenue(revenue));
+    }
+
+    @ReactMethod
+    public void reportAdRevenue(ReadableMap revenue) {
+        AppMetrica.reportAdRevenue(Utils.toAdRevenue(revenue));
     }
 }

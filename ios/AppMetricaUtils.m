@@ -271,4 +271,86 @@
     return nil;
 }
 
++ (AMARevenueInfo *)revenueForDict:(NSDictionary *)revenueDict 
+{
+    NSNumber *number = revenueDict[@"price"];
+    NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithDecimal:number.decimalValue];
+    NSString *currency = revenueDict[@"currency"];
+    AMAMutableRevenueInfo *revenueInfo = [[AMAMutableRevenueInfo alloc] initWithPriceDecimal:price currency:currency];
+    if (revenueDict[@"productID"] != nil) {
+        revenueInfo.productID = revenueDict[@"productID"];
+    }
+    if (revenueDict[@"quantity"] != nil) {
+        NSNumber *quantity = revenueDict[@"quantity"];
+        revenueInfo.quantity = quantity.unsignedIntValue;
+    }
+    if (revenueDict[@"payload"] != nil) {
+        revenueInfo.payload = revenueDict[@"payload"];
+    }
+    if (revenueDict[@"transactionID"] != nil) {
+        revenueInfo.transactionID = revenueDict[@"transactionID"];
+    }
+    if (revenueDict[@"receiptData"] != nil) {
+        NSString *receiptDataString = revenueDict[@"receiptData"];
+        revenueInfo.receiptData = [receiptDataString dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    return revenueInfo;
+}
+
++ (AMAAdRevenueInfo *)adRevenueForDict:(NSDictionary *)revenueDict 
+{
+    NSNumber *number = revenueDict[@"price"];
+    NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithDecimal:number.decimalValue];
+    NSString *currency = revenueDict[@"currency"];
+    AMAMutableAdRevenueInfo *adRevenueInfo = [[AMAMutableAdRevenueInfo alloc] initWithAdRevenue:price currency:currency];
+    if (revenueDict[@"adNetwork"] != nil) {
+        adRevenueInfo.adNetwork = revenueDict[@"adNetwork"];
+    }
+    if (revenueDict[@"adUnitID"] != nil) {
+        adRevenueInfo.adUnitID = revenueDict[@"adUnitID"];
+    }
+    if (revenueDict[@"adUnitName"] != nil) {
+        adRevenueInfo.adUnitName = revenueDict[@"adUnitName"];
+    }
+    if (revenueDict[@"adPlacementID"] != nil) {
+        adRevenueInfo.adPlacementID = revenueDict[@"adPlacementID"];
+    }
+    if (revenueDict[@"adPlacementName"] != nil) {
+        adRevenueInfo.adPlacementName = revenueDict[@"adPlacementName"];
+    }
+    if (revenueDict[@"precision"] != nil) {
+        adRevenueInfo.precision = revenueDict[@"precision"];
+    }
+    if (revenueDict[@"payload"] != nil) {
+        adRevenueInfo.payload = revenueDict[@"payload"];
+    }
+    if (revenueDict[@"adType"] != nil) {
+        adRevenueInfo.adType = [self toAdType:revenueDict[@"adType"]];
+    }
+    return adRevenueInfo;
+}
+
++ (AMAAdType)toAdType:(NSString *)type
+{
+    if ([type isEqualToString:@"native"]){
+        return AMAAdTypeNative;
+    }
+    if ([type isEqualToString:@"banner"]){
+        return AMAAdTypeBanner;
+    }
+    if ([type isEqualToString:@"mrec"]){
+        return AMAAdTypeMrec;
+    }
+    if ([type isEqualToString:@"interstitial"]){
+        return AMAAdTypeInterstitial;
+    }
+    if ([type isEqualToString:@"rewarded"]){
+        return AMAAdTypeRewarded;
+    }
+    if ([type isEqualToString:@"other"]){
+        return AMAAdTypeOther;
+    }
+    return AMAAdTypeOther;
+}
+
 @end

@@ -1,5 +1,6 @@
-import { NativeModules, Platform, AppState, Linking } from 'react-native';
+import { NativeModules, Platform, Linking } from 'react-native';
 import type { ECommerceEvent }  from './ecommerce.ts';
+import type { Revenue, AdRevenue }  from './revenue.ts';
 
 const LINKING_ERROR =
   `The package 'react-native-appmetrica' doesn't seem to be linked. Make sure: \n\n` +
@@ -65,24 +66,30 @@ const DEVICE_ID_HASH_KEY = 'appmetrica_device_id_hash';
 const DEVICE_ID_KEY = 'appmetrica_device_id';
 const UUID_KEY = 'appmetrica_uuid';
 
-function appOpenTracking(){
+var activated = false;
+
+function appOpenTracking() {
   const getUrlAsync = async () => {
     const initialUrl = await Linking.getInitialURL();
-    if(initialUrl != null){
+    if(initialUrl != null) {
       AppMetrica.reportAppOpen(initialUrl);
     }
   };
+  const callback = (event: { url: string; }) => {
+    AppMetrica.reportAppOpen(event.url);
+  }
   getUrlAsync();
+  Linking.addEventListener('url', callback);
 };
 
 export default {
   activate(config: AppMetricaConfig) {
-    AppMetrica.activate(config);
-    if (AppState.currentState === 'active' && config.sessionsAutoTracking !== false) {
-      AppMetrica.resumeSession();
-    }
-    if (config.appOpenTrackingEnbled !== false) {
-      appOpenTracking();
+    if (!activated) {
+      AppMetrica.activate(config);
+      if (config.appOpenTrackingEnbled !== false) {
+        appOpenTracking();
+      }
+      activated = true;
     }
   },
 
@@ -139,8 +146,16 @@ export default {
     AppMetrica.setUserProfileID(userProfileID);
   },
 
-  reportECommerce(event: ECommerceEvent){
+  reportECommerce(event: ECommerceEvent) {
     AppMetrica.reportECommerce(event)
+  },
+
+  reportRevenue(revenue: Revenue) {
+    AppMetrica.reportRevenue(revenue);
+  },
+
+  reportAdRevenue(adRevenue: AdRevenue) {
+    AppMetrica.reportAdRevenue(adRevenue);
   },
 
   DEVICE_ID_HASH_KEY,

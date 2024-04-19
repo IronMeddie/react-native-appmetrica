@@ -23,5 +23,8 @@
 + (AMAECommerceCartItem *)ecommerceCartItemForDict:(NSDictionary *)ecommerceCartItemDict;
 + (AMAECommerceOrder *)ecommerceOrderForDict:(NSDictionary *)ecommerceOrderDict;
 + (AMAECommerce *)ecommerceForDict:(NSDictionary *)ecommerceDict;
++ (AMARevenueInfo *)revenueForDict:(NSDictionary *)revenueDict;
++ (AMAAdRevenueInfo *)adRevenueForDict:(NSDictionary *)revenueDict;
++ (AMAAdType)toAdType:(NSString *)type;
 
 @end
