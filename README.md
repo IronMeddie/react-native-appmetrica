@@ -30,9 +30,10 @@ AppMetrica.reportEvent('My event', { foo: 'bar' });
 
 // Send a custom error event.
 AppMetrica.reportError('My error');
+```
+ecommerce
 
-  // ecom
-
+```
 import { 
   showProductCardEvent,
   showScreenEvent,
@@ -347,8 +348,10 @@ function beginCheckoutPurchaseEvent(){
 // Sending an e-commerce event.
     AppMetrica.reportECommerce(purchase);
 }
+```
 
-// getStartupParams
+get Identifiers
+```
   const paramsList = [AppMetrica.DEVICE_ID_HASH_KEY, AppMetrica.DEVICE_ID_KEY, AppMetrica.UUID_KEY];
   const paramsCallback = (params, reason) => {
     console.debug(params.deviceIdHash);
@@ -356,9 +359,10 @@ function beginCheckoutPurchaseEvent(){
     console.debug(params.uuid);
   };
   AppMetrica.requestStartupParams(paramsCallback, paramsList);
+```
 
-
-  //revenue
+revenue
+  ```
   const revenue = {
     price: 500,
     currency: 'USD',
@@ -370,8 +374,10 @@ function beginCheckoutPurchaseEvent(){
     signature: 'signature;', // optional. android purchase Signature
   };
   AppMetrica.reportRevenue(revenue);
+```
 
-  //adRevenue
+adRevenue
+```
   import { AdType }  from 'react-native-appmetrica/src/revenue.ts';
   ...
   const adRevenue = {
