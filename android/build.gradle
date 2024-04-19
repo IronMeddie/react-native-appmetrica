@@ -65,5 +65,5 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation "io.appmetrica.analytics:analytics:6.1.0"
+    implementation "io.appmetrica.analytics:analytics:6.3.0"
 }
