@@ -17,5 +17,5 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React-Core"
-  s.dependency "AppMetricaAnalytics", "5.2.0"
+  s.dependency "AppMetricaAnalytics", "5.3.0"
 end

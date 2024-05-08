@@ -1,12 +1,4 @@
-/*
- * Version for React Native
- * © 2020 YANDEX
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * https://yandex.com/legal/appmetrica_sdk_agreement/
- */
-
-package com.yandex.metrica.plugin.reactnative;
+package io.appmetrica.analytics.reactnative;
 
 import android.app.Activity;
 import android.util.Log;
@@ -22,6 +14,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 import io.appmetrica.analytics.AppMetrica;
+import io.appmetrica.analytics.AppMetricaConfig;
 
 @ReactModule(name = AppMetricaModule.NAME)
 public class AppMetricaModule extends ReactContextBaseJavaModule {
@@ -45,8 +38,9 @@ public class AppMetricaModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void activate(ReadableMap configMap) {
-        AppMetrica.activate(reactContext, Utils.toAppMetricaConfig(configMap));
-        if (Utils.isSessionTrackingEnabled(configMap)) {
+        AppMetricaConfig config = Utils.toAppMetricaConfig(configMap);
+        AppMetrica.activate(reactContext, config);
+        if (Boolean.TRUE.equals(config.sessionsAutoTrackingEnabled)) {
             enableActivityAutoTracking();
         }
     }

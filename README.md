@@ -1,5 +1,5 @@
 # react-native-appmetrica
-React Native bridge to the [AppMetrica](https://appmetrica.yandex.com/) on both iOS and Android.
+React Native bridge to the [AppMetrica](https://appmetrica.io) on both iOS and Android.
 
 ## Installation
 
@@ -31,10 +31,10 @@ AppMetrica.reportEvent('My event', { foo: 'bar' });
 // Send a custom error event.
 AppMetrica.reportError('My error');
 ```
-ecommerce
+## ecommerce
 
-```
-import { 
+```js
+import {
   showProductCardEvent,
   showScreenEvent,
   showProductDetailsEvent,
@@ -350,8 +350,8 @@ function beginCheckoutPurchaseEvent(){
 }
 ```
 
-get Identifiers
-```
+## get Identifiers
+```js
   const paramsList = [AppMetrica.DEVICE_ID_HASH_KEY, AppMetrica.DEVICE_ID_KEY, AppMetrica.UUID_KEY];
   const paramsCallback = (params, reason) => {
     console.debug(params.deviceIdHash);
@@ -361,14 +361,14 @@ get Identifiers
   AppMetrica.requestStartupParams(paramsCallback, paramsList);
 ```
 
-revenue
-  ```
+## revenue
+  ```js
   const revenue = {
     price: 500,
     currency: 'USD',
     productID: '12345', // optional
     quantity: 1, // optional
-    payload: { param: '1234' }, // optional. additional info
+    payload: '{ param: \'12345\' }', // optional. additional info
     transactionID: 'transactionID' //optional. ios revenue transaction id,
     receiptData: 'receiptData;' // optional. android purchase orijinalJson || ios receiptData,
     signature: 'signature;', // optional. android purchase Signature
@@ -376,8 +376,8 @@ revenue
   AppMetrica.reportRevenue(revenue);
 ```
 
-adRevenue
-```
+## adRevenue
+```js
   import { AdType }  from 'react-native-appmetrica/src/revenue.ts';
   ...
   const adRevenue = {
@@ -396,10 +396,10 @@ adRevenue
 
 ```
 
-folly/FBString.h not found
+## folly/FBString.h not found
 
-change your ios/Podfile: 
-```
+change your ios/Podfile:
+```pod
   ...
   post_install do |installer|
   ...
@@ -416,7 +416,3 @@ and use
 ```sh
 npx pod-install
 ```
-
-## License
-
-MIT

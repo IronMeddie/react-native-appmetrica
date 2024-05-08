@@ -1,6 +1,6 @@
 {
   "name": "react-native-appmetrica",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "React Native plugin for AppMetrica analytics tool",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -28,7 +28,6 @@
     "prepare": "bob build"
   },
   "keywords": [
-    "yandex",
     "appmetrica",
     "metrica",
     "analytics",
@@ -37,13 +36,13 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/yandexmobile/react-native-appmetrica",
-  "author": "YANDEX LLC <appmetrica@yandex-team.com> (https://appmetrica.yandex.com/docs)",
-  "license": "MIT",
+  "repository": "https://github.com/appmetrica/appmetrica-react-native-plugin",
+  "author": "AppMetrica <admin@appmetrica.io> (https://appmetrica.io)",
+  "license": "See LICENSE.md file",
   "bugs": {
-    "url": "https://github.com/yandexmobile/react-native-appmetrica/issues"
+    "url": "https://github.com/appmetrica/appmetrica-react-native-plugin/issues"
   },
-  "homepage": "https://github.com/yandexmobile/react-native-appmetrica#readme",
+  "homepage": "https://appmetrica.io/docs/en/sdk/react-native/analytics/quick-start/",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },

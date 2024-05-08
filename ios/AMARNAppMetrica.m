@@ -1,28 +1,19 @@
-/*
- * Version for React Native
- * © 2020 YANDEX
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * https://yandex.com/legal/appmetrica_sdk_agreement/
- */
 
-#import "AppMetrica.h"
-#import "AppMetricaUtils.h"
-#import "StartupParamsUtils.h"
+#import "AMARNAppMetrica.h"
+#import "AMARNAppMetricaUtils.h"
+#import "AMARNStartupParamsUtils.h"
 #import <AppMetricaCrashes/AppMetricaCrashes.h>
 
-static NSString *const kYMMReactNativeExceptionName = @"ReactNativeException";
-
-@implementation AppMetrica
+@implementation AMARNAppMetrica
 
 @synthesize methodQueue = _methodQueue;
 
-RCT_EXPORT_MODULE()
+RCT_EXPORT_MODULE(AppMetrica)
 
 RCT_EXPORT_METHOD(activate:(NSDictionary *)configDict)
 {
-    [[AMAAppMetricaCrashes crashes] setConfiguration:[AppMetricaUtils crashConfigurationForDictionary:configDict]];
-    [AMAAppMetrica activateWithConfiguration:[AppMetricaUtils configurationForDictionary:configDict]];
+    [[AMAAppMetricaCrashes crashes] setConfiguration:[AMARNAppMetricaUtils crashConfigurationForDictionary:configDict]];
+    [AMAAppMetrica activateWithConfiguration:[AMARNAppMetricaUtils configurationForDictionary:configDict]];
 }
 
 RCT_EXPORT_METHOD(getLibraryApiLevel)
@@ -66,10 +57,10 @@ RCT_EXPORT_METHOD(reportEvent:(NSString *)eventName:(NSDictionary *)attributes)
 RCT_EXPORT_METHOD(requestStartupParams:(NSArray *)identifiers:(RCTResponseSenderBlock)listener)
 {
     AMAIdentifiersCompletionBlock block = ^(NSDictionary<AMAStartupKey,id> * _Nullable identifiers, NSError * _Nullable error) {
-        NSDictionary *result = [StartupParamsUtils toStrartupParamsResult:identifiers];
-        listener(@[result, [self wrap:[StartupParamsUtils stringFromRequestStartupParamsError:error]]]);
+        NSDictionary *result = [AMARNStartupParamsUtils toStrartupParamsResult:identifiers];
+        listener(@[result, [self wrap:[AMARNStartupParamsUtils stringFromRequestStartupParamsError:error]]]);
     };
-    [AMAAppMetrica requestStartupIdentifiersWithKeys:[StartupParamsUtils toStartupKeys:identifiers] completionQueue:nil completionBlock:block];
+    [AMAAppMetrica requestStartupIdentifiersWithKeys:[AMARNStartupParamsUtils toStartupKeys:identifiers] completionQueue:nil completionBlock:block];
 }
 
 RCT_EXPORT_METHOD(resumeSession)
@@ -84,7 +75,7 @@ RCT_EXPORT_METHOD(sendEventsBuffer)
 
 RCT_EXPORT_METHOD(setLocation:(NSDictionary *)locationDict)
 {
-    AMAAppMetrica.customLocation = [AppMetricaUtils locationForDictionary:locationDict];
+    AMAAppMetrica.customLocation = [AMARNAppMetricaUtils locationForDictionary:locationDict];
 }
 
 RCT_EXPORT_METHOD(setLocationTracking:(BOOL)enabled)
@@ -99,7 +90,7 @@ RCT_EXPORT_METHOD(setDataSendingEnabled:(BOOL)enabled)
 
 RCT_EXPORT_METHOD(reportECommerce:(NSDictionary *)ecommerceDict)
 {
-   [AMAAppMetrica reportECommerce:[AppMetricaUtils ecommerceForDict:ecommerceDict] onFailure:nil];
+   [AMAAppMetrica reportECommerce:[AMARNAppMetricaUtils ecommerceForDict:ecommerceDict] onFailure:nil];
 }
 
 RCT_EXPORT_METHOD(setUserProfileID:(NSString *)userProfileID)
@@ -109,12 +100,12 @@ RCT_EXPORT_METHOD(setUserProfileID:(NSString *)userProfileID)
 
 RCT_EXPORT_METHOD(reportRevenue:(NSDictionary *)revenueDict)
 {
-    [AMAAppMetrica reportRevenue:[AppMetricaUtils revenueForDict:revenueDict] onFailure:nil];
+    [AMAAppMetrica reportRevenue:[AMARNAppMetricaUtils revenueForDict:revenueDict] onFailure:nil];
 }
 
 RCT_EXPORT_METHOD(reportAdRevenue:(NSDictionary *)revenueDict)
 {
-    [AMAAppMetrica reportAdRevenue:[AppMetricaUtils adRevenueForDict:revenueDict] onFailure:nil];
+    [AMAAppMetrica reportAdRevenue:[AMARNAppMetricaUtils adRevenueForDict:revenueDict] onFailure:nil];
 }
 
 - (NSObject *)wrap:(NSObject *)value

@@ -19,7 +19,7 @@ const AppMetrica = NativeModules.AppMetrica
       }
     );
 
-  export type AppMetricaConfig = {
+export type AppMetricaConfig = {
   apiKey: string;
   appVersion?: string;
   crashReporting?: boolean;
@@ -52,7 +52,7 @@ export type Location = {
   timestamp?: number;
 };
 
-type StartupParamsReason = 'UNKNOWN' | 'NETWORK' | 'INVALID_RESPONSE';
+export type StartupParamsReason = 'UNKNOWN' | 'NETWORK' | 'INVALID_RESPONSE';
 
 export type StartupParams = {
   deviceIdHash?: string;
@@ -161,6 +161,6 @@ export default {
   DEVICE_ID_HASH_KEY,
 
   DEVICE_ID_KEY,
-  
+
   UUID_KEY
 };
