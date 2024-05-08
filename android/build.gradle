@@ -1,17 +1,8 @@
-/*
- * Version for React Native
- * © 2020 YANDEX
- * You may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * https://yandex.com/legal/appmetrica_sdk_agreement/
- */
-
 buildscript {
     if (project == rootProject) {
         repositories {
             google()
             mavenCentral()
-            jcenter()
         }
 
         dependencies {
@@ -27,7 +18,15 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-    namespace = "com.yandex.metrica.plugin.reactnative"
+    if (project.android.hasProperty("namespace")) {
+        namespace "io.appmetrica.analytics.reactnative"
+
+        sourceSets {
+            main {
+                manifest.srcFile "src/main/AndroidManifest-nopackage.xml"
+            }
+        }
+    }
     compileSdkVersion safeExtGet('AppMetrica_compileSdkVersion', 34)
     defaultConfig {
         minSdkVersion safeExtGet('AppMetrica_minSdkVersion', 16)
@@ -59,11 +58,10 @@ repositories {
     }
     google()
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation "io.appmetrica.analytics:analytics:6.3.0"
+    implementation "io.appmetrica.analytics:analytics:6.5.0"
 }
