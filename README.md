@@ -15,14 +15,15 @@ npx pod-install
 ## Usage
 
 ```js
-import AppMetrica from 'react-native-appmetrica';
+import AppMetrica, { AppMetricaConfig } from 'react-native-appmetrica/src';
 
 // Starts the statistics collection process.
-AppMetrica.activateWithConfig({
+const config: AppMetricaConfig = {
   apiKey: '...KEY...',
   sessionTimeout: 120,
   firstActivationAsUpdate: false,
-});
+}
+AppMetrica.activate(config);
 
 // Sends a custom event message and additional parameters (optional).
 AppMetrica.reportEvent('My event');
@@ -31,29 +32,22 @@ AppMetrica.reportEvent('My event', { foo: 'bar' });
 // Send a custom error event.
 AppMetrica.reportError('My error');
 ```
-## ecommerce
+# ecommerce
 
 ```js
-import {
-  showProductCardEvent,
-  showScreenEvent,
-  showProductDetailsEvent,
-  addCartItemEvent,
-  removeCartItemEvent,
-  beginCheckoutEvent,
-  purchaseEvent
-} from 'react-native-appmetrica/src/ecommerce';
+import * as Ecommerce from 'react-native-appmetrica/src/ecommerce';
+```
 
-// showScreenEvent
-function ecomScreeen(){
-
-  const payload = {
-    'configuration': 'landscape',
-    'full_screen': 'true'
-  };
+## showScreenEvent
+```js
+function showScreenEvent(){
+  const payload = new Map<string, string>([
+    ["configuration", "landscape"],
+    ["full_screen", "true"]
+  ]);
 
   // Creating a screen object.
-  const screen = {
+  const screen: Ecommerce.ECommerceScreen = {
     name: 'ProductCardActivity',               // Optional.
     searchQuery: 'даниссимо кленовый сироп',   // Optional.
     payload: payload,                          // Optional.
@@ -61,45 +55,34 @@ function ecomScreeen(){
 
   };
 
-const showScreen = showScreenEvent(screen);
-// Sending an e-commerce event.
-AppMetrica.reportECommerce(showScreen);
-
+  const showScreen = Ecommerce.showScreenEvent(screen);
+  // Sending an e-commerce event.
+  AppMetrica.reportECommerce(showScreen);
 };
-
-//showProductCardEvent
-function ecomCard(){
-
-  const payload = {
-    'configuration': 'landscape',
-    'full_screen': 'true'
-  };
+```
+## showProductCardEvent
+```js
+function showProductCardEvent(){
+  const payload = new Map<string, string>([
+    ["configuration", "landscape"],
+    ["full_screen", "true"]
+  ]);
 
   // Creating a screen object.
-  const screen = {
+  const screen: Ecommerce.ECommerceScreen = {
     name: 'ProductCardActivity',               // Optional.
     searchQuery: 'даниссимо кленовый сироп',   // Optional.
     payload: payload,                          // Optional.
     categoriesPath: ['Акции','Красная цена']   // Optional.
-
   };
 
-  const amount = {
+  const amount: Ecommerce.ECommerceAmount = {
     amount: 4.53,
-   unit: 'USD'};
-  // Creating an actualPrice object.
-  const actualPrice = {amount: amount,
-      internalComponents: [  // Optional.
-      {amount: 30570000,
-      unit: 'wood'},
-      {amount: 26.89,
-      unit: 'iron'},
-      {amount: 5.1,
-      unit: 'gold'}
-  ]
-};
-    // Creating an originalPrice object.
-  const originalPrice = {amount: {amount: 5.78, unit: 'USD'},
+    unit: 'USD'
+  };
+
+   // Creating an actualPrice object.
+  const actualPrice: Ecommerce.ECommercePrice = {amount: amount,
     internalComponents: [  // Optional.
     {amount: 30570000,
     unit: 'wood'},
@@ -107,59 +90,59 @@ function ecomCard(){
     unit: 'iron'},
     {amount: 5.1,
     unit: 'gold'}
-]
-};
+  ]};
 
+    // Creating an originalPrice object.
+  const originalPrice: Ecommerce.ECommercePrice = {amount: {amount: 5.78, unit: 'USD'},
+    internalComponents: [  // Optional.
+    {amount: 30570000,
+    unit: 'wood'},
+    {amount: 26.89,
+    unit: 'iron'},
+    {amount: 5.1,
+    unit: 'gold'}
+  ]};
 
   // Creating a product object.
-  const product = {
-  sku: '779213',
-  name: 'Продукт творожный «Даниссимо» 5.9%, 130 г.',  // Optional.
-  actualPrice: actualPrice, // Optional.
-  originalPrice: originalPrice, // Optional.
-  promocodes: ['BT79IYX', 'UT5412EP'],  // Optional.
-  payload: payload,    // Optional.
-  categoriesPath: ['Продукты', 'Молочные продукты', 'Йогурты']  // Optional.
+  const product: Ecommerce.ECommerceProduct = {
+    sku: '779213',
+    name: 'Продукт творожный «Даниссимо» 5.9%, 130 г.',  // Optional.
+    actualPrice: actualPrice, // Optional.
+    originalPrice: originalPrice, // Optional.
+    promocodes: ['BT79IYX', 'UT5412EP'],  // Optional.
+    payload: payload,    // Optional.
+    categoriesPath: ['Продукты', 'Молочные продукты', 'Йогурты']  // Optional.
   };
-
-  const showProductCard = showProductCardEvent(product, screen);
+  
+  const showProductCard = Ecommerce.showProductCardEvent(product, screen);
   // Sending an e-commerce event.
   AppMetrica.reportECommerce(showProductCard);
-
 };
+```
 
-//showProductDetailsEvent
-function ecomDetails(){
-
-  const payload = {
-    'configuration': 'landscape',
-    'full_screen': 'true'
-  };
+## showProductDetailsEvent
+```js
+function showProductDetailsEvent(){
+  const payload = new Map<string, string>([
+    ["configuration", "landscape"],
+    ["full_screen", "true"]
+  ]);
 
   // Creating a screen object.
-  const screen = {
+  const screen: Ecommerce.ECommerceScreen = {
     name: 'ProductCardActivity',               // Optional.
     searchQuery: 'даниссимо кленовый сироп',   // Optional.
     payload: payload,                          // Optional.
     categoriesPath: ['Акции','Красная цена']   // Optional.
-
   };
 
-  const amount = {
+  const amount: Ecommerce.ECommerceAmount = {
     amount: 4.53,
-   unit: 'USD'};
+    unit: 'USD'
+  };
+
   // Creating an actualPrice object.
-  const actualPrice = {amount: amount,
-      internalComponents: [  // Optional.
-      {amount: 30570000,
-      unit: 'wood'},
-      {amount: 26.89,
-      unit: 'iron'},
-      {amount: 5.1,
-      unit: 'gold'}
-  ]};
-    // Creating an originalPrice object.
-  const originalPrice = {amount: {amount: 5.78, unit: 'USD'},
+  const actualPrice: Ecommerce.ECommercePrice = {amount: amount,
     internalComponents: [  // Optional.
     {amount: 30570000,
     unit: 'wood'},
@@ -167,63 +150,66 @@ function ecomDetails(){
     unit: 'iron'},
     {amount: 5.1,
     unit: 'gold'}
-]};
+  ]};
 
+  // Creating an originalPrice object.
+  const originalPrice: Ecommerce.ECommercePrice = {amount: {amount: 5.78, unit: 'USD'},
+    internalComponents: [  // Optional.
+    {amount: 30570000,
+    unit: 'wood'},
+    {amount: 26.89,
+    unit: 'iron'},
+    {amount: 5.1,
+    unit: 'gold'}
+  ]};
 
   // Creating a product object.
-  const product = {
-  sku: '779213',
-  name: 'Продукт творожный «Даниссимо» 5.9%, 130 г.',  // Optional.
-  actualPrice: actualPrice, // Optional.
-  originalPrice: originalPrice, // Optional.
-  promocodes: ['BT79IYX', 'UT5412EP'],  // Optional.
-  payload: payload,    // Optional.
-  categoriesPath: ['Продукты', 'Молочные продукты', 'Йогурты']  // Optional.
+  const product: Ecommerce.ECommerceProduct = {
+    sku: '779213',
+    name: 'Продукт творожный «Даниссимо» 5.9%, 130 г.',  // Optional.
+    actualPrice: actualPrice, // Optional.
+    originalPrice: originalPrice, // Optional.
+    promocodes: ['BT79IYX', 'UT5412EP'],  // Optional.
+    payload: payload,    // Optional.
+    categoriesPath: ['Продукты', 'Молочные продукты', 'Йогурты']  // Optional.
   };
 
-  const referrer = {
+  const referrer: Ecommerce.ECommerceReferrer = {
     type: 'button',
     identifier: '76890',
     screen: screen
   };
-
-  const showProductDetails = showProductDetailsEvent(product, referrer);
+  
+  const showProductDetails = Ecommerce.showProductDetailsEvent(product, referrer);
   // Sending an e-commerce event.
   AppMetrica.reportECommerce(showProductDetails);
 
 };
+```
 
-//addCartItemEvent, removeCartItemEvent
+## addCartItemEvent, removeCartItemEvent
+```js
 function addRemoveCartItem(){
-  const payload = {
-    'configuration': 'landscape',
-    'full_screen': 'true'
-  };
+  const payload = new Map<string, string>([
+    ["configuration", "landscape"],
+    ["full_screen", "true"]
+  ]);
 
   // Creating a screen object.
-  const screen = {
+  const screen: Ecommerce.ECommerceScreen = {
     name: 'ProductCardActivity',               // Optional.
     searchQuery: 'даниссимо кленовый сироп',   // Optional.
     payload: payload,                          // Optional.
     categoriesPath: ['Акции','Красная цена']   // Optional.
-
   };
 
-  const amount = {
+  const amount: Ecommerce.ECommerceAmount = {
     amount: 4.53,
-   unit: 'USD'};
+    unit: 'USD'
+  };
+
   // Creating an actualPrice object.
-  const actualPrice = {amount: amount,
-      internalComponents: [  // Optional.
-      {amount: 30570000,
-      unit: 'wood'},
-      {amount: 26.89,
-      unit: 'iron'},
-      {amount: 5.1,
-      unit: 'gold'}
-  ]};
-    // Creating an originalPrice object.
-  const originalPrice = {amount: {amount: 5.78, unit: 'USD'},
+  const actualPrice: Ecommerce.ECommercePrice = {amount: amount,
     internalComponents: [  // Optional.
     {amount: 30570000,
     unit: 'wood'},
@@ -231,25 +217,36 @@ function addRemoveCartItem(){
     unit: 'iron'},
     {amount: 5.1,
     unit: 'gold'}
-]};
-
+  ]};
+    // Creating an originalPrice object.
+  const originalPrice: Ecommerce.ECommercePrice = {amount: {amount: 5.78, unit: 'USD'},
+    internalComponents: [  // Optional.
+    {amount: 30570000,
+    unit: 'wood'},
+    {amount: 26.89,
+    unit: 'iron'},
+    {amount: 5.1,
+    unit: 'gold'}
+  ]};
 
   // Creating a product object.
-  const product = {
-  sku: '779213',
-  name: 'Продукт творожный «Даниссимо» 5.9%, 130 г.',  // Optional.
-  actualPrice: actualPrice, // Optional.
-  originalPrice: originalPrice, // Optional.
-  promocodes: ['BT79IYX', 'UT5412EP'],  // Optional.
-  payload: payload,    // Optional.
-  categoriesPath: ['Продукты', 'Молочные продукты', 'Йогурты']  // Optional.
+  const product: Ecommerce.ECommerceProduct = {
+    sku: '779213',
+    name: 'Продукт творожный «Даниссимо» 5.9%, 130 г.',  // Optional.
+    actualPrice: actualPrice, // Optional.
+    originalPrice: originalPrice, // Optional.
+    promocodes: ['BT79IYX', 'UT5412EP'],  // Optional.
+    payload: payload,    // Optional.
+    categoriesPath: ['Продукты', 'Молочные продукты', 'Йогурты']  // Optional.
   };
-// Creating a referrer object.
+
+  // Creating a referrer object.
   const referrer = {
     type: 'button', // Optional.
     identifier: '76890', // Optional.
     screen: screen // Optional.
   };
+
   // Creating a cartItem object.
   const ecommerceCartItem = {
     product: product,
@@ -257,50 +254,40 @@ function addRemoveCartItem(){
     quantity: 1.0,
     referrer: referrer // Optional.
   };
-  const addCartItem = addCartItemEvent(ecommerceCartItem);
 
-    // Sending an e-commerce event.
-    AppMetrica.reportECommerce(addCartItem);
+  const addCartItem = Ecommerce.addCartItemEvent(ecommerceCartItem);
 
-    const removeCartItem = removeCartItemEvent(ecommerceCartItem);
-// Sending an e-commerce event.
-    AppMetrica.reportECommerce(removeCartItem);
+  // Sending an e-commerce event.
+  AppMetrica.reportECommerce(addCartItem);
+
+  const removeCartItem = Ecommerce.removeCartItemEvent(ecommerceCartItem);
+  // Sending an e-commerce event. 
+  AppMetrica.reportECommerce(removeCartItem);
 };
+```
 
-
-//beginCheckoutEvent, purchaseEvent
+## beginCheckoutEvent, purchaseEvent
+```js
 function beginCheckoutPurchaseEvent(){
-
-  const payload = {
-    'configuration': 'landscape',
-    'full_screen': 'true'
-  };
+  const payload = new Map<string, string>([
+    ["configuration", "landscape"],
+    ["full_screen", "true"]
+  ]);
 
   // Creating a screen object.
-  const screen = {
+  const screen: Ecommerce.ECommerceScreen = {
     name: 'ProductCardActivity',               // Optional.
     searchQuery: 'даниссимо кленовый сироп',   // Optional.
     payload: payload,                          // Optional.
     categoriesPath: ['Акции','Красная цена']   // Optional.
-
   };
 
-  const amount = {
+  const amount: Ecommerce.ECommerceAmount = {
     amount: 4.53,
     unit: 'USD'};
 
   // Creating an actualPrice object.
-  const actualPrice = {amount: amount,
-      internalComponents: [  // Optional.
-      {amount: 30570000,
-      unit: 'wood'},
-      {amount: 26.89,
-      unit: 'iron'},
-      {amount: 5.1,
-      unit: 'gold'}
-  ]};
-    // Creating an originalPrice object.
-  const originalPrice = {amount: {amount: 5.78, unit: 'USD'},
+  const actualPrice: Ecommerce.ECommercePrice = {amount: amount,
     internalComponents: [  // Optional.
     {amount: 30570000,
     unit: 'wood'},
@@ -308,11 +295,22 @@ function beginCheckoutPurchaseEvent(){
     unit: 'iron'},
     {amount: 5.1,
     unit: 'gold'}
-]};
+  ]};
+
+    // Creating an originalPrice object.
+  const originalPrice: Ecommerce.ECommercePrice = {amount: {amount: 5.78, unit: 'USD'},
+    internalComponents: [  // Optional.
+    {amount: 30570000,
+    unit: 'wood'},
+    {amount: 26.89,
+    unit: 'iron'},
+    {amount: 5.1,
+    unit: 'gold'}
+  ]};
 
 
   // Creating a product object.
-  const product = {
+  const product: Ecommerce.ECommerceProduct = {
   sku: '779213',
   name: 'Продукт творожный «Даниссимо» 5.9%, 130 г.',  // Optional.
   actualPrice: actualPrice, // Optional.
@@ -321,39 +319,52 @@ function beginCheckoutPurchaseEvent(){
   payload: payload,    // Optional.
   categoriesPath: ['Продукты', 'Молочные продукты', 'Йогурты']  // Optional.
   };
-// Creating a referrer object.
-  const referrer = {
+
+  // Creating a referrer object.
+  const referrer: Ecommerce.ECommerceReferrer = {
     type: 'button', // Optional.
     identifier: '76890', // Optional.
     screen: screen // Optional.
   };
   // Creating a cartItem object.
-  const ecommerceCartItem = {
+  const ecommerceCartItem: Ecommerce.ECommerceCartItem = {
     product: product,
     price: actualPrice,
     quantity: 1.0,
     referrer: referrer // Optional.
   };
 
-  const order = {
+  const order: Ecommerce.ECommerceOrder = {
     orderId: '88528768',
     products: [ecommerceCartItem],
-    payload: payload,
+    payload: undefined,
   };
 
-  const beginCheckout = beginCheckoutEvent(order);
-  //   // Sending an e-commerce event.
-    AppMetrica.reportECommerce(beginCheckout);
-    const purchase = purchaseEvent(order);
-// Sending an e-commerce event.
-    AppMetrica.reportECommerce(purchase);
+  const beginCheckout = Ecommerce.beginCheckoutEvent(order);
+  // Sending an e-commerce event.
+  AppMetrica.reportECommerce(beginCheckout);
+
+  const purchase = Ecommerce.purchaseEvent(order);
+  // Sending an e-commerce event.
+  AppMetrica.reportECommerce(purchase);
 }
 ```
 
 ## get Identifiers
 ```js
-  const paramsList = [AppMetrica.DEVICE_ID_HASH_KEY, AppMetrica.DEVICE_ID_KEY, AppMetrica.UUID_KEY];
-  const paramsCallback = (params, reason) => {
+import {
+  StartupParams,
+  StartupParamsCallback,
+  StartupParamsKeys,
+  StartupParamsReason
+} from 'react-native-appmetrica/src/index';
+...
+  const paramsList: Array<StartupParamsKeys> = [ 
+    StartupParamsKeys.DEVICE_ID_HASH_KEY,
+    StartupParamsKeys.DEVICE_ID_KEY,
+    StartupParamsKeys.UUID_KEY
+  ];
+  const paramsCallback: StartupParamsCallback = (params: StartupParams, reason?: StartupParamsReason) => {
     console.debug(params.deviceIdHash);
     console.debug(params.deviceId);
     console.debug(params.uuid);
@@ -363,34 +374,39 @@ function beginCheckoutPurchaseEvent(){
 
 ## revenue
   ```js
-  const revenue = {
+  import { Revenue } from 'react-native-appmetrica/src/revenue';
+  ...
+  const revenue: Revenue = {
     price: 500,
     currency: 'USD',
-    productID: '12345', // optional
-    quantity: 1, // optional
-    payload: '{ param: \'12345\' }', // optional. additional info
-    transactionID: 'transactionID' //optional. ios revenue transaction id,
-    receiptData: 'receiptData;' // optional. android purchase orijinalJson || ios receiptData,
-    signature: 'signature;', // optional. android purchase Signature
+    productID: '12345',
+    quantity: 1,
+    payload: '{ test: \'test\' }',
+    transactionID: 'transactionID',
+    receiptData: 'receiptData;',
+    signature: 'signature;',
   };
   AppMetrica.reportRevenue(revenue);
 ```
 
 ## adRevenue
 ```js
-  import { AdType }  from 'react-native-appmetrica/src/revenue.ts';
+  import { AdType, AdRevenue }  from 'react-native-appmetrica/src/revenue';
   ...
-  const adRevenue = {
+  const adRevenue: AdRevenue = {
     price: 100,
     currency: 'RUB',
-    payload: { param: '1234' }, // optional. additional info
-    adNetwork: 'adNetwork', // optional
-    adPlacementId: 'adPlacementId', // optional
-    adPlacementName: 'adPlacementName', // optional
-    adType: AdType.BANNER, // optional
-    adUnitId: '12345', // optional
-    adUnitName: 'adUnitName', // optional
-    precision: 'precision', // optional
+    payload: new Map<string,string>([
+      ["key", "value"],
+      ["source", "true"]
+    ]),
+    adNetwork: 'adNetwork',
+    adPlacementID: 'adPlacementId',
+    adPlacementName: 'adPlacementName',
+    adType: AdType.BANNER,
+    adUnitID: '12345',
+    adUnitName: 'adUnitName',
+    precision: 'precision',
   };
   AppMetrica.reportAdRevenue(adRevenue);
 

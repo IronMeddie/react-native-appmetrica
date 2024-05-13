@@ -1,6 +1,6 @@
 import { NativeModules, Platform, Linking } from 'react-native';
-import type { ECommerceEvent }  from './ecommerce.ts';
-import type { Revenue, AdRevenue }  from './revenue.ts';
+import type { ECommerceEvent }  from './ecommerce';
+import type { Revenue, AdRevenue, AdType }  from './revenue';
 
 const LINKING_ERROR =
   `The package 'react-native-appmetrica' doesn't seem to be linked. Make sure: \n\n` +
@@ -18,53 +18,6 @@ const AppMetrica = NativeModules.AppMetrica
         },
       }
     );
-
-export type AppMetricaConfig = {
-  apiKey: string;
-  appVersion?: string;
-  crashReporting?: boolean;
-  firstActivationAsUpdate?: boolean;
-  location: Location;
-  locationTracking?: boolean;
-  logs?: boolean;
-  sessionTimeout?: number;
-  statisticsSending?: boolean;
-  preloadInfo?: PreloadInfo;
-  maxReportsInDatabaseCount?: number; // Android only
-  nativeCrashReporting?: boolean; // Android only
-  activationAsSessionStart?: boolean; // iOS only
-  sessionsAutoTracking?: boolean; // iOS only
-  appOpenTrackingEnbled?: boolean;
-};
-
-export type PreloadInfo = {
-  trackingId: string;
-  additionalInfo?: Object;
-};
-
-export type Location = {
-  latitude: number;
-  longitude: number;
-  altitude?: number;
-  accuracy?: number;
-  course?: number;
-  speed?: number;
-  timestamp?: number;
-};
-
-export type StartupParamsReason = 'UNKNOWN' | 'NETWORK' | 'INVALID_RESPONSE';
-
-export type StartupParams = {
-  deviceIdHash?: string;
-  deviceId?: string;
-  uuid?: string;
-};
-
-export type StartupParamsCallback = (params: StartupParams, reason?: StartupParamsReason) => void;
-
-const DEVICE_ID_HASH_KEY = 'appmetrica_device_id_hash';
-const DEVICE_ID_KEY = 'appmetrica_device_id';
-const UUID_KEY = 'appmetrica_uuid';
 
 var activated = false;
 
@@ -110,7 +63,7 @@ export default {
     AppMetrica.reportAppOpen(deeplink);
   },
 
-  reportError(identifier: string, message: string, _reason: Object) {
+  reportError(identifier: string, message: string, _reason?: Object) {
     AppMetrica.reportError(identifier, message);
   },
 
@@ -118,7 +71,7 @@ export default {
     AppMetrica.reportEvent(eventName, attributes);
   },
 
-  requestStartupParams(listener: StartupParamsCallback, identifiers: Array<string>) {
+  requestStartupParams(listener: StartupParamsCallback, identifiers: Array<StartupParamsKeys>) {
     AppMetrica.requestStartupParams(identifiers, listener);
   },
 
@@ -156,11 +109,54 @@ export default {
 
   reportAdRevenue(adRevenue: AdRevenue) {
     AppMetrica.reportAdRevenue(adRevenue);
-  },
-
-  DEVICE_ID_HASH_KEY,
-
-  DEVICE_ID_KEY,
-
-  UUID_KEY
+  }
 };
+
+export type AppMetricaConfig = {
+  apiKey: string;
+  appVersion?: string;
+  crashReporting?: boolean;
+  firstActivationAsUpdate?: boolean;
+  location?: Location;
+  locationTracking?: boolean;
+  logs?: boolean;
+  sessionTimeout?: number;
+  statisticsSending?: boolean;
+  preloadInfo?: PreloadInfo;
+  maxReportsInDatabaseCount?: number; // Android only
+  nativeCrashReporting?: boolean; // Android only
+  activationAsSessionStart?: boolean; // iOS only
+  sessionsAutoTracking?: boolean; // iOS only
+  appOpenTrackingEnbled?: boolean;
+};
+  
+export type PreloadInfo = {
+  trackingId: string;
+  additionalInfo?: Object;
+};
+  
+export type Location = {
+  latitude: number;
+  longitude: number;
+  altitude?: number;
+  accuracy?: number;
+  course?: number;
+  speed?: number;
+  timestamp?: number;
+};
+  
+export type StartupParamsReason = 'UNKNOWN' | 'NETWORK' | 'INVALID_RESPONSE';
+
+export type StartupParams = {
+  deviceIdHash?: string;
+  deviceId?: string;
+  uuid?: string;
+};
+  
+export type StartupParamsCallback = (params: StartupParams, reason?: StartupParamsReason) => void;
+
+export enum StartupParamsKeys {
+  DEVICE_ID_HASH_KEY = 'appmetrica_device_id_hash',
+  DEVICE_ID_KEY = 'appmetrica_device_id',
+  UUID_KEY = 'appmetrica_uuid'
+}
